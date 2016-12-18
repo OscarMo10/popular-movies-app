@@ -18,21 +18,25 @@ import java.util.List;
 public class MovieDatabaseAPI {
     private static final String TAG = MovieDatabaseAPI.class.getSimpleName();
 
-    private static final String BASE_URL = "https://api.themoviedb.org/3";
+    private static final String BASE_API_URL = "https://api.themoviedb.org/3";
+    private static final String BASE_IMAGE_URL = "https://image.tmdb.org/t/p";
+
     private static final String QUERY_API_KEY = "api_key";
     private static final String QUERY_PAGE = "page";
     private static final String QUERY_LANGUAGE = "language";
+
+    private static final String FILE_SIZE = "w300";
 
     // public constants
     public static final String LANGUAGE_ENGLISH = "en-US";
 
     // Popular Movies Endpoint
-    private static final String POPULAR_MOVIES_ENDPOINT = "movie/popular";
+    private static final String POPULAR_MOVIES_ENDPOINT = "/movie/popular";
 
     public static List<Movie> getPopularMovies(int page) throws IOException {
-        String urlString = getBaseBuilder()
-                .appendEncodedPath(POPULAR_MOVIES_ENDPOINT)
+        String urlString = Uri.parse(BASE_API_URL + POPULAR_MOVIES_ENDPOINT).buildUpon()
                 .appendQueryParameter(QUERY_PAGE, Integer.toString(page))
+                .appendQueryParameter(QUERY_API_KEY, BuildConfig.THE_MOVIE_DB_API_KEY)
                 .build()
                 .toString();
 
@@ -65,10 +69,14 @@ public class MovieDatabaseAPI {
         return movies;
     }
 
-    private static Uri.Builder getBaseBuilder() {
-        return Uri.parse(BASE_URL).buildUpon()
-                .appendQueryParameter(QUERY_LANGUAGE, LANGUAGE_ENGLISH)
-                .appendQueryParameter(QUERY_API_KEY, BuildConfig.THE_MOVIE_DB_API_KEY);
+    public static String getPosterUrl(String posterPath) {
+        return new StringBuilder()
+                .append(BASE_IMAGE_URL)
+                .append('/')
+                .append(FILE_SIZE)
+                .append('/')
+                .append(posterPath)
+                .toString();
     }
 
     public static class Movie {
