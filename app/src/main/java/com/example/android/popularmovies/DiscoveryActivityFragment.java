@@ -150,4 +150,8 @@ public class DiscoveryActivityFragment extends Fragment {
             mMoviePosterAdapter.addMovies(movies);
         }
     }
+
+    public interface MovieChosenListener {
+        public void onMovieChosen(MovieDatabaseAPI.Movie movie);
+    }
 }

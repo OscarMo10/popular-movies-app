@@ -1,6 +1,8 @@
 package com.example.android.popularmovies;
 
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -79,7 +81,7 @@ public class MovieDatabaseAPI {
                 .toString();
     }
 
-    public static class Movie {
+    public static class Movie implements Parcelable{
         private final String mPosterPath;
         private final String mReleaseDate;
         private final String mTitle;
@@ -93,6 +95,39 @@ public class MovieDatabaseAPI {
             mOverview = overview;
             mVoteAverage = voteAverage;
         }
+
+        @Override
+        public int describeContents() {
+            return 0;
+        }
+
+        @Override
+        public void writeToParcel(Parcel parcel, int i) {
+            parcel.writeString(mPosterPath);
+            parcel.writeString(mReleaseDate);
+            parcel.writeString(mTitle);
+            parcel.writeString(mOverview);
+            parcel.writeDouble(mVoteAverage);
+        }
+
+        public static final Parcelable.Creator<Movie> CREATOR
+                = new Parcelable.Creator<Movie>() {
+            @Override
+            public Movie createFromParcel(Parcel parcel) {
+                String posterPath = parcel.readString();
+                String releaseDate = parcel.readString();
+                String title = parcel.readString();
+                String overview = parcel.readString();
+                double voteAverage = parcel.readDouble();
+
+                return new Movie(posterPath, releaseDate, title, overview, voteAverage);
+            }
+
+            @Override
+            public Movie[] newArray(int i) {
+                return new Movie[i];
+            }
+        };
 
         public static Movie getMovieFromJsonObject(JSONObject movieJsonObject) throws JSONException {
             String posterPath = movieJsonObject.getString(MovieJsonProperites.POSTER_PATH_PROPERTY);
