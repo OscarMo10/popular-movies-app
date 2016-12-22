@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="horizontal"
+              android:padding="10dp"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content">
+    <ImageView
+        android:id="@+id/playIconImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_play_arrow_black_36dp" />
+
+    <TextView
+        android:id="@+id/videoNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="10dp"/>
+
+</LinearLayout>

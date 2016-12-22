@@ -1,5 +1,6 @@
 package com.example.android.popularmovies;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,13 +20,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.content.ContentValues.TAG;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class DiscoveryActivityFragment extends Fragment {
     private MoviePosterAdapter mMoviePosterAdapter;
+    private RecyclerView mRecyclerView;
+
+    private static final String TAG = DiscoveryActivityFragment.class.getSimpleName();
 
     public DiscoveryActivityFragment() {
     }
@@ -34,7 +37,15 @@ public class DiscoveryActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_discovery, container, false);
-        RecyclerView recyclerView = (RecyclerView) rootView.findViewById(R.id.discovery_recyclerview);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.discovery_recyclerview);
+        initRecyclerView(mRecyclerView);
+
+        new FetchMovies().execute();
+
+        return rootView;
+    }
+
+    private void initRecyclerView(RecyclerView recyclerView) {
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 1);
 
         // set span count for layout manager based on poster image size
@@ -45,10 +56,6 @@ public class DiscoveryActivityFragment extends Fragment {
         // set adapter
         mMoviePosterAdapter = new MoviePosterAdapter(null);
         recyclerView.setAdapter(mMoviePosterAdapter);
-
-        new FetchMovies().execute();
-
-        return rootView;
     }
 
     private void setSpanForGridLayoutManager(GridLayoutManager layoutManager) {
@@ -62,7 +69,7 @@ public class DiscoveryActivityFragment extends Fragment {
         layoutManager.setSpanCount(span);
     }
 
-    private class MoviePosterAdapter extends RecyclerView.Adapter<MoviePosterHolder> {
+    private class MoviePosterAdapter extends RecyclerView.Adapter<MoviePosterHolder> implements View.OnClickListener{
         private List<MovieDatabaseAPI.Movie> mData;
 
         public MoviePosterAdapter(List<MovieDatabaseAPI.Movie> data) {
@@ -93,6 +100,7 @@ public class DiscoveryActivityFragment extends Fragment {
         public MoviePosterHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
             View view = layoutInflater.inflate(R.layout.list_item_movie, parent, false);
+            view.setOnClickListener(this);
             return new MoviePosterHolder(view);
         }
 
@@ -105,6 +113,20 @@ public class DiscoveryActivityFragment extends Fragment {
         @Override
         public int getItemCount() {
             return mData.size();
+        }
+
+        @Override
+        public void onClick(View view) {
+            int position = mRecyclerView.getChildAdapterPosition(view);
+
+            if (position == RecyclerView.NO_POSITION) {
+                Log.d(TAG, "onClick: Clicked view had no adapter position in recyclerview.");
+                return;
+            }
+
+            MovieDatabaseAPI.Movie movie = mData.get(position);
+            Intent displayIntent = DetailActivity.newIntent(getActivity(), movie.getId());
+            startActivity(displayIntent);
         }
     }
 
