@@ -5,7 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
-public class DiscoveryActivity extends AppCompatActivity implements DiscoveryActivityFragment.MovieChosenListener{
+public class DiscoveryActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,10 +21,5 @@ public class DiscoveryActivity extends AppCompatActivity implements DiscoveryAct
                     .add(R.id.discover_fragment_container, fragment)
                     .commit();
         }
-    }
-
-    @Override
-    public void onMovieChosen(MovieDatabaseAPI.Movie movie) {
-        // TODO Implement function
     }
 }
