@@ -3,6 +3,7 @@ package com.example.android.popularmovies;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,13 +25,13 @@ import java.util.List;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DiscoveryActivityFragment extends Fragment {
+public class DiscoveryFragment extends Fragment {
     private MoviePosterAdapter mMoviePosterAdapter;
     private RecyclerView mRecyclerView;
 
-    private static final String TAG = DiscoveryActivityFragment.class.getSimpleName();
+    private static final String TAG = DiscoveryFragment.class.getSimpleName();
 
-    public DiscoveryActivityFragment() {
+    public DiscoveryFragment() {
     }
 
     @Override
@@ -40,10 +41,28 @@ public class DiscoveryActivityFragment extends Fragment {
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.discovery_recyclerview);
         initRecyclerView(mRecyclerView);
 
-        new FetchMovies().execute();
+        // if movie data was saved, restore. Else, fetch new data
+        int moviesRestored = mMoviePosterAdapter.restoreMoviesFromBundle(savedInstanceState);
+
+        // if recycler view adapter empty, fetch data
+        if (moviesRestored == 0) {
+            new FetchMovies().execute();
+        }
 
         return rootView;
     }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mMoviePosterAdapter != null) {
+            mMoviePosterAdapter.saveAdapterState(outState);
+        }
+        else {
+            Log.i(TAG, "onSaveInstanceState: mMoviePosterAdapter is null.");
+        }
+
+    }
+
 
     private void initRecyclerView(RecyclerView recyclerView) {
         GridLayoutManager layoutManager = new GridLayoutManager(getActivity(), 1);
@@ -69,18 +88,44 @@ public class DiscoveryActivityFragment extends Fragment {
         layoutManager.setSpanCount(span);
     }
 
-    private class MoviePosterAdapter extends RecyclerView.Adapter<MoviePosterHolder> implements View.OnClickListener{
+    class MoviePosterAdapter extends RecyclerView.Adapter<MoviePosterHolder> implements View.OnClickListener{
         private List<MovieDatabaseAPI.Movie> mData;
+        private static final String DATA_KEY = "data";
 
         public MoviePosterAdapter(List<MovieDatabaseAPI.Movie> data) {
-            if(data != null)
-            {
+            if(data != null) {
                 mData = data;
             }
             else {
                 mData = new ArrayList<>();
             }
 
+        }
+
+        void saveAdapterState(Bundle outState) {
+            Parcelable[] movies = mData.toArray(new Parcelable[0]);
+            mData.toArray(movies);
+
+            outState.putParcelableArray(DATA_KEY, movies);
+        }
+
+        int restoreMoviesFromBundle(Bundle bundle) {
+            if (bundle == null) {
+                return 0;
+            }
+
+            Parcelable[] parcelableArray = bundle.getParcelableArray(DATA_KEY);
+            if (parcelableArray == null) {
+                return 0;
+            }
+
+            ArrayList<MovieDatabaseAPI.Movie> movies = new ArrayList<>();
+            for (Parcelable movie : parcelableArray) {
+                movies.add((MovieDatabaseAPI.Movie) movie);
+            }
+
+            addMovies(movies);
+            return movies.size();
         }
 
         public void addMovies(List<MovieDatabaseAPI.Movie> moreMovies) {
@@ -93,7 +138,6 @@ public class DiscoveryActivityFragment extends Fragment {
 
             // notify dataset has changed
             this.notifyItemRangeChanged(startIndex, moreMovies.size());
-
         }
 
         @Override
@@ -173,7 +217,5 @@ public class DiscoveryActivityFragment extends Fragment {
         }
     }
 
-    public interface MovieChosenListener {
-        public void onMovieChosen(MovieDatabaseAPI.Movie movie);
-    }
+
 }

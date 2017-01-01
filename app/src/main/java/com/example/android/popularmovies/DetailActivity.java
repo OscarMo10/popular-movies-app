@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import com.example.android.popularmovies.data.MovieDbHelper;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String EXTRA_MOVIE_ID = "movie_id";
@@ -26,7 +27,6 @@ public class DetailActivity extends AppCompatActivity {
                     .add(R.id.display_fragment_container, fragment)
                     .commit();
         }
-
     }
 
     public Fragment initFragment() {
@@ -41,7 +41,7 @@ public class DetailActivity extends AppCompatActivity {
             movieId = MovieDatabaseAPI.INVALID_MOVIE_ID;
         }
 
-        return DetailActivityFragment.createFragment(movieId);
+        return DetailFragment.createFragment(movieId);
     }
 
     public static Intent newIntent(Context packageContext, int movieId) {

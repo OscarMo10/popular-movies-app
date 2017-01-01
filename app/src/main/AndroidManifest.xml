@@ -25,6 +25,7 @@
             android:label="@string/title_activity_display"
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
+        <provider android:authorities="com.example.android.popularmovies" android:name=".data.MovieProvider" />
     </application>
 
 </manifest>

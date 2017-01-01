@@ -16,7 +16,7 @@ public class DiscoveryActivity extends AppCompatActivity {
         Fragment fragment = fm.findFragmentById(R.id.discover_fragment_container);
 
         if (fragment == null) {
-            fragment = new DiscoveryActivityFragment();
+            fragment = new DiscoveryFragment();
             fm.beginTransaction()
                     .add(R.id.discover_fragment_container, fragment)
                     .commit();

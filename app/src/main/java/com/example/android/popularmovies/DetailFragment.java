@@ -32,7 +32,7 @@ import static com.example.android.popularmovies.R.id.userReviewTextView;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class DetailActivityFragment extends Fragment {
+public class DetailFragment extends Fragment {
     private TextView mMovieRuntimeTextView;
     private ImageView mPosterImageView;
     private TextView mReleaseTextView;
@@ -44,11 +44,11 @@ public class DetailActivityFragment extends Fragment {
 
     public static final String MOVIE_ID_ARGUMENT = "movie";
 
-    public DetailActivityFragment() {
+    public DetailFragment() {
     }
 
-    public static DetailActivityFragment createFragment(int movieId) {
-        DetailActivityFragment fragment = new DetailActivityFragment();
+    public static DetailFragment createFragment(int movieId) {
+        DetailFragment fragment = new DetailFragment();
         Bundle bundle = new Bundle();
         bundle.putInt(MOVIE_ID_ARGUMENT, movieId);
         fragment.setArguments(bundle);
@@ -129,28 +129,28 @@ public class DetailActivityFragment extends Fragment {
         mMovieRuntimeTextView.setText(movieDetailResult.getTitle());
 
         String releaseDate = movieDetailResult.getReleaseDate();
-        String releaseYear = getYearFromDateString(releaseDate);
+        String releaseYear = yearFromDateString(releaseDate);
         mReleaseTextView.setText(releaseYear);
 
         int movieRuntime = movieDetailResult.getRuntime();
-        String formattedMovieRuntimeStr = getFormattedMovieRuntime(movieRuntime);
+        String formattedMovieRuntimeStr = formatMovieRuntime(movieRuntime);
         mMovieLengthTextView.setText(formattedMovieRuntimeStr);
 
         double voteAverage = movieDetailResult.getVoteAverage();
-        String voteAverageStr = getFormattedVoteAverageString(voteAverage);
+        String voteAverageStr = formatVoteAverageString(voteAverage);
         mUserReviewTextView.setText(voteAverageStr);
 
         String overview = movieDetailResult.getOverView();
         mMovieOverviewTextView.setText(overview);
     }
 
-    private String getFormattedMovieRuntime(int movieDuration) {
+    private String formatMovieRuntime(int movieDuration) {
         String timeStr = Integer.toString(movieDuration);
 
         return timeStr + "min";
     }
 
-    private String getYearFromDateString(String releaseDate) {
+    private String yearFromDateString(String releaseDate) {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd", Locale.US);
         Date date = null;
         try {
@@ -166,7 +166,7 @@ public class DetailActivityFragment extends Fragment {
 
     }
 
-    private String getFormattedVoteAverageString(double userReview) {
+    private String formatVoteAverageString(double userReview) {
         String reviewStr = Double.toString(userReview);
 
         return reviewStr + "/10";

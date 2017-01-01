@@ -5,7 +5,7 @@
     android:id="@+id/discovery_recyclerview"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.android.popularmovies.DiscoveryActivityFragment"
+    tools:context="com.example.android.popularmovies.DiscoveryFragment"
     tools:showIn="@layout/activity_discovery">
 
 
