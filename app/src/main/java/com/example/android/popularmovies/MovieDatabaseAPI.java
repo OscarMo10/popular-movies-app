@@ -1,6 +1,8 @@
 package com.example.android.popularmovies;
 
 import android.net.Uri;
+import android.os.Looper;
+import android.os.NetworkOnMainThreadException;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
@@ -66,64 +68,6 @@ public class MovieDatabaseAPI {
         return movies;
     }
 
-    public static MovieDetailResult getMovieDetail(int movieId) throws IOException {
-
-        String urlString = getUrlForMovieDetail(movieId);
-        String jsonStr = Utils.getURLString(urlString);
-        MovieDetailResult movieDetailResult = parseMovieDetailResult(jsonStr);
-
-        return movieDetailResult;
-    }
-
-    private static String getUrlForMovieDetail(int movieId) {
-        String movieDetailEndpoint = String.format(ENDPOINTS.MOVIE_DETAIL_ENDPOINT_FORMAT, movieId);
-        String urlString = Uri.parse(BASE_MOVIE_DB_API_URL + movieDetailEndpoint).buildUpon()
-                .appendQueryParameter(QUERY_API_KEY, BuildConfig.THE_MOVIE_DB_API_KEY)
-                .build()
-                .toString();
-
-        return urlString;
-    }
-
-
-    public static List<MovieVideosResult> getVideosForMovie(int movieId) throws IOException {
-        String urlStr = getUrlForMovieVideosEndpoint(movieId);
-        String jsonStr = Utils.getURLString(urlStr);
-        List<MovieVideosResult> results = parseMovieVideosResponse(jsonStr);
-
-        return results;
-    }
-
-    private static List<MovieVideosResult> parseMovieVideosResponse(String jsonStr) {
-        List<MovieVideosResult> videos = new ArrayList<>();
-
-        try {
-            JSONObject jsonObject = new JSONObject(jsonStr);
-            JSONArray results = jsonObject.getJSONArray(MovieVideosResponseProperty.RESULTS);
-
-            for (int i = 0; i < results.length(); i++) {
-                JSONObject entry = results.getJSONObject(i);
-                MovieVideosResult movieVideo = parseResultEntry(entry);
-                videos.add(movieVideo);
-            }
-        }
-        catch (JSONException e) {
-            Log.e(TAG, "parseMovieVideosResponse: Error parsing response from movie videos endpoint", e);
-        }
-
-        return videos;
-    }
-
-    private static MovieVideosResult parseResultEntry(JSONObject entry) throws JSONException{
-        String id = entry.getString(MovieVideosResponseProperty.ID);
-        String name = entry.getString(MovieVideosResponseProperty.NAME);
-        String key = entry.getString(MovieVideosResponseProperty.KEY);
-
-        String urlForVideo = createYoutubeUrlFromKey(key);
-
-        return new MovieVideosResult(id, name, urlForVideo);
-    }
-
     private static String createYoutubeUrlFromKey(String key) {
         String url = Uri.parse(BASE_YOUTUBE_URL).buildUpon()
                 .appendQueryParameter(YOUTUBE_VIDEO_QUERY_PARAM, key)
@@ -131,38 +75,6 @@ public class MovieDatabaseAPI {
                 .toString();
 
         return url;
-    }
-
-    private static String getUrlForMovieVideosEndpoint(int movieId) {
-        String endpointFormat = ENDPOINTS.MOVIE_VIDEOS_ENDPOINT_FORMAT;
-        String movieVideosEnpoint = String.format(endpointFormat, movieId);
-
-        return Uri.parse(BASE_MOVIE_DB_API_URL + movieVideosEnpoint).buildUpon()
-                .appendQueryParameter(QUERY_API_KEY, BuildConfig.THE_MOVIE_DB_API_KEY)
-                .build()
-                .toString();
-    }
-
-    private static MovieDetailResult parseMovieDetailResult(String jsonStr) {
-        MovieDetailResult movieDetailResult = null;
-
-        try {
-            JSONObject result = new JSONObject(jsonStr);
-
-            String title = result.getString(MovieDetailResponseProperty.TITLE);
-            String posterPath = result.getString(MovieDetailResponseProperty.POSTER_PATH);
-            String releaseDate = result.getString(MovieDetailResponseProperty.RELEASE_DATE);
-            double voteAverage = result.getDouble(MovieDetailResponseProperty.VOTE_AVERAGE);
-            int runtime = result.getInt(MovieDetailResponseProperty.RUNTIME);
-            String overView = result.getString(MovieDetailResponseProperty.OVERVIEW);
-
-            movieDetailResult = new MovieDetailResult(title, posterPath, releaseDate, voteAverage, runtime, overView);
-
-        } catch (JSONException e) {
-            Log.e(TAG, "parseMovieDetailResult: Error while paring json.", e);
-        }
-
-        return movieDetailResult;
     }
 
     private static List<Movie> parseMovieJson(String jsonString) {
@@ -284,9 +196,86 @@ public class MovieDatabaseAPI {
         public double getVoteAverage() {
             return mVoteAverage;
         }
+
+        public MovieDetailInfo getMovieDetail() throws IOException{
+            // should not run on main thread. Network operation
+            if (Looper.myLooper() == Looper.getMainLooper()) {
+                throw new NetworkOnMainThreadException();
+            }
+
+            String urlString = getUrlForMovieDetail(this.mId);
+            String jsonStr = Utils.getURLString(urlString);
+            MovieDetailInfo movieDetailInfo = parseMovieDetailResponse(jsonStr);
+
+            return movieDetailInfo;
+        }
+
+        public List<MovieVideoInfo> getVideosInfo() throws IOException{
+
+            String urlStr = getUrlForMovieVideosEndpoint(this.mId);
+            String jsonStr = Utils.getURLString(urlStr);
+            List<MovieVideoInfo> results = parseMovieVideosResponse(jsonStr);
+
+            return results;
+        }
     }
 
-    public static class MovieDetailResult {
+    private static String getUrlForMovieDetail(int movieId) {
+        String movieDetailEndpoint = String.format(ENDPOINTS.MOVIE_DETAIL_ENDPOINT_FORMAT, movieId);
+        String urlString = Uri.parse(BASE_MOVIE_DB_API_URL + movieDetailEndpoint).buildUpon()
+                .appendQueryParameter(QUERY_API_KEY, BuildConfig.THE_MOVIE_DB_API_KEY)
+                .build()
+                .toString();
+
+        return urlString;
+    }
+
+    private static MovieDetailInfo parseMovieDetailResponse(String jsonStr) {
+        MovieDetailInfo movieDetailInfo = null;
+
+        //TODO - Encapsulate object creation for MovieDetailInfo object by providing static factory method to create object from JSONObject
+        try {
+            JSONObject result = new JSONObject(jsonStr);
+
+            String title = result.getString(MovieDetailResponseProperty.TITLE);
+            String posterPath = result.getString(MovieDetailResponseProperty.POSTER_PATH);
+            String releaseDate = result.getString(MovieDetailResponseProperty.RELEASE_DATE);
+            double voteAverage = result.getDouble(MovieDetailResponseProperty.VOTE_AVERAGE);
+            int runtime = result.getInt(MovieDetailResponseProperty.RUNTIME);
+            String overView = result.getString(MovieDetailResponseProperty.OVERVIEW);
+
+            movieDetailInfo = new MovieDetailInfo(title, posterPath, releaseDate, voteAverage, runtime, overView);
+
+        } catch (JSONException e) {
+            Log.e(TAG, "parseMovieDetailResponse: Error while paring json.", e);
+        }
+
+        return movieDetailInfo;
+    }
+
+    private static List<MovieVideoInfo> parseMovieVideosResponse(String jsonStr) {
+        List<MovieVideoInfo> videos = new ArrayList<>();
+
+        try {
+            JSONObject jsonObject = new JSONObject(jsonStr);
+            JSONArray results = jsonObject.getJSONArray(MovieVideosResponseProperty.RESULTS);
+
+            for (int i = 0; i < results.length(); i++) {
+                JSONObject entry = results.getJSONObject(i);
+
+                // TODO - Create static factory method to construct MovieVideoInfo object from JSONObject
+                MovieVideoInfo movieVideo = MovieVideoInfo.createMovieVideoInfo(entry);
+                videos.add(movieVideo);
+            }
+        }
+        catch (JSONException e) {
+            Log.e(TAG, "parseMovieVideosResponse: Error parsing response from movie videos endpoint", e);
+        }
+
+        return videos;
+    }
+
+    public static final class MovieDetailInfo {
         private String mTitle;
         private String mPosterUrl;
         private String mReleaseDate;
@@ -294,7 +283,7 @@ public class MovieDatabaseAPI {
         private int mRuntime;
         private String mOverView;
 
-        public MovieDetailResult(String title, String posterUrl, String releaseDate, double voteAverage, int runtime, String overView) {
+        public MovieDetailInfo(String title, String posterUrl, String releaseDate, double voteAverage, int runtime, String overView) {
             mTitle = title;
             mPosterUrl = posterUrl;
             mReleaseDate = releaseDate;
@@ -328,12 +317,22 @@ public class MovieDatabaseAPI {
         }
     }
 
-    public static class MovieVideosResult {
+    private static String getUrlForMovieVideosEndpoint(int movieId) {
+        String endpointFormat = ENDPOINTS.MOVIE_VIDEOS_ENDPOINT_FORMAT;
+        String movieVideosEnpoint = String.format(endpointFormat, movieId);
+
+        return Uri.parse(BASE_MOVIE_DB_API_URL + movieVideosEnpoint).buildUpon()
+                .appendQueryParameter(QUERY_API_KEY, BuildConfig.THE_MOVIE_DB_API_KEY)
+                .build()
+                .toString();
+    }
+
+    public static final class MovieVideoInfo {
         private String mId;
         private String mName;
         private String mVideoUrl;
 
-        public MovieVideosResult(String id, String name, String videoUrl) {
+        public MovieVideoInfo(String id, String name, String videoUrl) {
             mId = id;
             mName = name;
             mVideoUrl = videoUrl;
@@ -350,6 +349,16 @@ public class MovieDatabaseAPI {
 
         public String getVideoUrl() {
             return mVideoUrl;
+        }
+
+        private static MovieVideoInfo createMovieVideoInfo(JSONObject entry) throws JSONException {
+            String id = entry.getString(MovieVideosResponseProperty.ID);
+            String name = entry.getString(MovieVideosResponseProperty.NAME);
+            String key = entry.getString(MovieVideosResponseProperty.KEY);
+
+            String urlForVideo = createYoutubeUrlFromKey(key);
+
+            return new MovieVideoInfo(id, name, urlForVideo);
         }
     }
 

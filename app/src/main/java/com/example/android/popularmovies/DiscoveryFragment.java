@@ -93,13 +93,7 @@ public class DiscoveryFragment extends Fragment {
         private static final String DATA_KEY = "data";
 
         public MoviePosterAdapter(List<MovieDatabaseAPI.Movie> data) {
-            if(data != null) {
-                mData = data;
-            }
-            else {
-                mData = new ArrayList<>();
-            }
-
+           mData = (data != null) ? data : new ArrayList<MovieDatabaseAPI.Movie>();
         }
 
         void saveAdapterState(Bundle outState) {

@@ -16,16 +16,16 @@ import java.util.List;
  */
 
 public class MovieVideoAdapter extends RecyclerView.Adapter<MovieVideoAdapter.MovieVideoHolder> {
-    private List<MovieDatabaseAPI.MovieVideosResult> mData;
+    private List<MovieDatabaseAPI.MovieVideoInfo> mData;
     Context mContext;
 
 
-    public MovieVideoAdapter(Context context, List<MovieDatabaseAPI.MovieVideosResult> data) {
+    public MovieVideoAdapter(Context context, List<MovieDatabaseAPI.MovieVideoInfo> data) {
         mContext = context;
         mData = data;
     }
 
-    public void appendMovieVideos(List<MovieDatabaseAPI.MovieVideosResult> moreData) {
+    public void appendMovieVideos(List<MovieDatabaseAPI.MovieVideoInfo> moreData) {
         if (moreData == null || moreData.isEmpty()) {
             return;
         }
@@ -48,7 +48,7 @@ public class MovieVideoAdapter extends RecyclerView.Adapter<MovieVideoAdapter.Mo
 
     @Override
     public void onBindViewHolder(MovieVideoHolder holder, int position) {
-        MovieDatabaseAPI.MovieVideosResult movieVideo = mData.get(position);
+        MovieDatabaseAPI.MovieVideoInfo movieVideo = mData.get(position);
         holder.bindMovieVideo(movieVideo);
     }
 
@@ -66,7 +66,7 @@ public class MovieVideoAdapter extends RecyclerView.Adapter<MovieVideoAdapter.Mo
             initChildViews(itemView);
         }
 
-        public void bindMovieVideo(final MovieDatabaseAPI.MovieVideosResult movieVideo) {
+        public void bindMovieVideo(final MovieDatabaseAPI.MovieVideoInfo movieVideo) {
             String name = movieVideo.getName();
             videoNameTextView.setText(name);
 

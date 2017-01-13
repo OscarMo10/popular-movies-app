@@ -86,12 +86,12 @@ public class DetailFragment extends Fragment {
         mRecyclerView.setLayoutManager(layoutManager);
 
         // add adapter
-        List<MovieDatabaseAPI.MovieVideosResult> data = new ArrayList<>();
+        List<MovieDatabaseAPI.MovieVideoInfo> data = new ArrayList<>();
         mAdapter = new MovieVideoAdapter(getActivity(), data);
         mRecyclerView.setAdapter(mAdapter);
     }
 
-    private void addResultsToAdapter(List<MovieDatabaseAPI.MovieVideosResult> data) {
+    private void addResultsToAdapter(List<MovieDatabaseAPI.MovieVideoInfo> data) {
         if (data != null && data.size() == 0) {
             Log.d(TAG, "addResultsToAdapter: Data is null or empty");    
         }
@@ -114,33 +114,33 @@ public class DetailFragment extends Fragment {
         new FetchTrailers().execute(movieId);
     }
 
-    private void bindMovieDetail(MovieDatabaseAPI.MovieDetailResult movieDetailResult) {
-        if (movieDetailResult == null) {
-            Log.d(TAG, "bindMovieDetail: movieDetailResult is null. Views will not be populated");
+    private void bindMovieDetail(MovieDatabaseAPI.MovieDetailInfo movieDetailInfo) {
+        if (movieDetailInfo == null) {
+            Log.d(TAG, "bindMovieDetail: movieDetailInfo is null. Views will not be populated");
             return;
         }
 
         // Set poster image
-        String posterUrl = MovieDatabaseAPI.getPosterUrl(movieDetailResult.getPosterUrl());
+        String posterUrl = MovieDatabaseAPI.getPosterUrl(movieDetailInfo.getPosterUrl());
         Picasso.with(getActivity()).load(posterUrl).into(mPosterImageView);
 
         // set rest of details
-        String title = movieDetailResult.getTitle();
-        mMovieRuntimeTextView.setText(movieDetailResult.getTitle());
+        String title = movieDetailInfo.getTitle();
+        mMovieRuntimeTextView.setText(movieDetailInfo.getTitle());
 
-        String releaseDate = movieDetailResult.getReleaseDate();
+        String releaseDate = movieDetailInfo.getReleaseDate();
         String releaseYear = yearFromDateString(releaseDate);
         mReleaseTextView.setText(releaseYear);
 
-        int movieRuntime = movieDetailResult.getRuntime();
+        int movieRuntime = movieDetailInfo.getRuntime();
         String formattedMovieRuntimeStr = formatMovieRuntime(movieRuntime);
         mMovieLengthTextView.setText(formattedMovieRuntimeStr);
 
-        double voteAverage = movieDetailResult.getVoteAverage();
+        double voteAverage = movieDetailInfo.getVoteAverage();
         String voteAverageStr = formatVoteAverageString(voteAverage);
         mUserReviewTextView.setText(voteAverageStr);
 
-        String overview = movieDetailResult.getOverView();
+        String overview = movieDetailInfo.getOverView();
         mMovieOverviewTextView.setText(overview);
     }
 
@@ -172,37 +172,37 @@ public class DetailFragment extends Fragment {
         return reviewStr + "/10";
     }
 
-    private class FetchDetail extends AsyncTask<Integer, Void, MovieDatabaseAPI.MovieDetailResult> {
+    private class FetchDetail extends AsyncTask<Integer, Void, MovieDatabaseAPI.MovieDetailInfo> {
 
 
         @Override
-        protected MovieDatabaseAPI.MovieDetailResult doInBackground(Integer... params) {
+        protected MovieDatabaseAPI.MovieDetailInfo doInBackground(Integer... params) {
             int movieId = params[0];
-            MovieDatabaseAPI.MovieDetailResult movieDetailResult = null;
+            MovieDatabaseAPI.MovieDetailInfo movieDetailInfo = null;
 
             try {
-                 movieDetailResult = MovieDatabaseAPI.getMovieDetail(movieId);
+                 movieDetailInfo = MovieDatabaseAPI.getMovieDetail(movieId);
             } catch (IOException e) {
                 Log.d(TAG, "doInBackground: Error fetching movie details");
                 e.printStackTrace();
             }
 
-            return movieDetailResult;
+            return movieDetailInfo;
         }
 
         @Override
-        protected void onPostExecute(MovieDatabaseAPI.MovieDetailResult movieDetailResult) {
-            bindMovieDetail(movieDetailResult);
+        protected void onPostExecute(MovieDatabaseAPI.MovieDetailInfo movieDetailInfo) {
+            bindMovieDetail(movieDetailInfo);
         }
     }
 
-    private class FetchTrailers extends AsyncTask<Integer, Void, List<MovieDatabaseAPI.MovieVideosResult>> {
+    private class FetchTrailers extends AsyncTask<Integer, Void, List<MovieDatabaseAPI.MovieVideoInfo>> {
 
         @Override
-        protected List<MovieDatabaseAPI.MovieVideosResult> doInBackground(Integer... integers) {
+        protected List<MovieDatabaseAPI.MovieVideoInfo> doInBackground(Integer... integers) {
             int movieId = integers[0];
 
-            List<MovieDatabaseAPI.MovieVideosResult> result = null;
+            List<MovieDatabaseAPI.MovieVideoInfo> result = null;
             try {
                 result =
                         MovieDatabaseAPI.getVideosForMovie(movieId);
@@ -215,7 +215,7 @@ public class DetailFragment extends Fragment {
         }
 
         @Override
-        protected void onPostExecute(List<MovieDatabaseAPI.MovieVideosResult> data) {
+        protected void onPostExecute(List<MovieDatabaseAPI.MovieVideoInfo> data) {
             addResultsToAdapter(data);
         }
     }

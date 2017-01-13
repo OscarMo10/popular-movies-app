@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
+import static com.example.android.popularmovies.data.MovieContract.*;
+
 /**
  * Created by oscar on 12/31/16.
  */
@@ -17,35 +19,19 @@ public class MovieProvider extends ContentProvider {
     private MovieDbHelper mOpenHelper;
 
     static final int MOVIE = 100;
-    static final int MOVIE_FAVORITE = 101;
-    static final int MOVIE_WITH_ID = 102;
 
 
 
     static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-        final String authority = MovieContract.CONTENT_AUTHORITY;
+        final String authority = CONTENT_AUTHORITY;
 
-        matcher.addURI(authority, MovieContract.PATH_MOVIE, MOVIE);
-        matcher.addURI(authority, MovieContract.PATH_MOVIE + "/favorite", MOVIE_FAVORITE);
+        matcher.addURI(authority, PATH_MOVIE, MOVIE);
 
         return matcher;
     }
 
-    private Cursor getFavoriteMovies() {
-        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
 
-        return db.query(
-                MovieContract.MovieEntry.TABLE_NAME,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-    }
 
     @Override
     public boolean onCreate() {
@@ -59,21 +45,9 @@ public class MovieProvider extends ContentProvider {
         Cursor retCursor;
 
         switch (sUriMatcher.match(uri)) {
-            case MOVIE: {
-                retCursor = null;
+            case MOVIE:
+                retCursor = getMovies();
                 break;
-            }
-
-            case MOVIE_FAVORITE: {
-                retCursor = getFavoriteMovies();
-                break;
-            }
-
-            case MOVIE_WITH_ID: {
-                retCursor = null;
-                break;
-            }
-
             default:
                 throw new UnsupportedOperationException("Unknown uri: "+ uri);
         }
@@ -82,21 +56,83 @@ public class MovieProvider extends ContentProvider {
         return retCursor;
     }
 
+    private Cursor getMovies() {
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        return db.query(
+                MovieEntry.TABLE_NAME,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+    }
+
     @Nullable
     @Override
     public String getType(Uri uri) {
-        return null;
+
+        String type;
+        switch (sUriMatcher.match(uri)) {
+            case MOVIE: {
+                type =  MovieEntry.CONTENT_TYPE;
+                break;
+            }
+            default: {
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+            }
+        }
+
+        return type;
     }
 
     @Nullable
     @Override
     public Uri insert(Uri uri, ContentValues contentValues) {
-        return null;
+        long id;
+        switch (sUriMatcher.match(uri)) {
+            case MOVIE: {
+                id = insertMovie(contentValues);
+                break;
+            }
+            default: {
+                throw new UnsupportedOperationException("Unknown uri " + uri);
+            }
+        }
+
+        return MovieEntry.buildMovieUri(id);
     }
 
+    private long insertMovie(ContentValues values) {
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+
+        return db.insert(MovieEntry.TABLE_NAME, null, values);
+    }
     @Override
-    public int delete(Uri uri, String s, String[] strings) {
-        return 0;
+    public int delete(Uri uri, String selection, String[] strings) {
+        SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+        int rowsDeleted;
+
+
+        selection = (selection == null) ? "1" : selection;
+
+        switch (sUriMatcher.match(uri)) {
+            case MOVIE: {
+                rowsDeleted = db.delete(MovieEntry.TABLE_NAME, selection, null);
+                break;
+            }
+            default: {
+                throw new UnsupportedOperationException("Unknown uri " + uri);
+            }
+        }
+
+        if (rowsDeleted != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        return rowsDeleted;
     }
 
     @Override
