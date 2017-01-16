@@ -7,7 +7,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import com.example.android.popularmovies.data.MovieDbHelper;
+
+import com.example.android.popularmovies.data.MovieDatabaseAPI;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String EXTRA_MOVIE_ID = "movie_id";

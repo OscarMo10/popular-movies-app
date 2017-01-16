@@ -2,6 +2,8 @@ package com.example.android.popularmovies;
 
 import android.support.test.runner.AndroidJUnit4;
 
+import com.example.android.popularmovies.data.MovieDatabaseAPI;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 

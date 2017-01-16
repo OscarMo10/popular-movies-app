@@ -1,4 +1,4 @@
-package com.example.android.popularmovies.data;
+package com.example.android.popularmovies.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -8,7 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.Nullable;
 
-import static com.example.android.popularmovies.data.MovieContract.*;
+import static com.example.android.popularmovies.provider.MovieContract.*;
 
 /**
  * Created by oscar on 12/31/16.

@@ -1,12 +1,11 @@
-package com.example.android.popularmovies.data;
+package com.example.android.popularmovies.provider;
 
 import android.content.UriMatcher;
 import android.net.Uri;
 import android.support.test.runner.AndroidJUnit4;
-import com.example.android.popularmovies.data.MovieContract;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;

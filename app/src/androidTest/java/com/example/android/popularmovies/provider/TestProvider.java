@@ -1,4 +1,4 @@
-package com.example.android.popularmovies.data;
+package com.example.android.popularmovies.provider;
 
 import android.content.ComponentName;
 import android.content.ContentValues;
@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import static com.example.android.popularmovies.data.MovieContract.MovieEntry;
+import static com.example.android.popularmovies.provider.MovieContract.MovieEntry;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;

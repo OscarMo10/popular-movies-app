@@ -1,4 +1,4 @@
-package com.example.android.popularmovies.data;
+package com.example.android.popularmovies.provider;
 
 
 import android.content.ContentValues;
@@ -7,15 +7,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
-import org.hamcrest.Matchers;
-import org.hamcrest.collection.IsEmptyCollection;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import java.util.HashSet;
 
-import static com.example.android.popularmovies.data.MovieContract.*;
+import static com.example.android.popularmovies.provider.MovieContract.*;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.core.IsNot.not;

@@ -1,10 +1,10 @@
-package com.example.android.popularmovies.data;
+package com.example.android.popularmovies.provider;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import static com.example.android.popularmovies.data.MovieContract.*;
+import static com.example.android.popularmovies.provider.MovieContract.*;
 
 /**
  * Created by oscar on 12/31/16.
