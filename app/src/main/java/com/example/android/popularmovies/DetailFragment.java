@@ -145,33 +145,7 @@ public class DetailFragment extends Fragment {
         mMovieOverviewTextView.setText(overview);
     }
 
-    private String formatMovieRuntime(int movieDuration) {
-        String timeStr = Integer.toString(movieDuration);
 
-        return timeStr + "min";
-    }
-
-    private String yearFromDateString(String releaseDate) {
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-mm-dd", Locale.US);
-        Date date = null;
-        try {
-            date = formatter.parse(releaseDate);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        Calendar calendar = formatter.getCalendar();
-        int year = calendar.get(Calendar.YEAR);
-
-        return Integer.toString(year);
-
-    }
-
-    private String formatVoteAverageString(double userReview) {
-        String reviewStr = Double.toString(userReview);
-
-        return reviewStr + "/10";
-    }
 
     private class FetchDetail extends AsyncTask<Integer, Void, MovieDatabaseAPI.MovieDetailInfo> {
 

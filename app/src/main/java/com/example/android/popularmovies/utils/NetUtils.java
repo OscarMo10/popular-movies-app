@@ -1,4 +1,4 @@
-package com.example.android.popularmovies;
+package com.example.android.popularmovies.utils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,7 +14,7 @@ import java.net.URL;
 /**
  * Code borrowed from Android Programming: The Big Nerd Ranch Guide  p.410
  */
-public class Utils {
+public class NetUtils {
     public static byte[] getUrlBytes(String urlSpec) throws IOException {
         URL url = new URL(urlSpec);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();

@@ -4,7 +4,7 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.example.android.popularmovies.BuildConfig;
-import com.example.android.popularmovies.Utils;
+import com.example.android.popularmovies.utils.NetUtils;
 
 import org.json.JSONException;
 
@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.List;
 
 import static com.example.android.popularmovies.data.MovieDatabaseAPI.ENDPOINTS.POPULAR_MOVIES_ENDPOINT;
-import static com.example.android.popularmovies.data.MovieVideoInfo.parseMovieVideosResponse;
 
 /**
  * Created by oscar on 12/17/16.
@@ -34,10 +33,6 @@ public class MovieDatabaseAPI {
     public static final String LANGUAGE_ENGLISH = "en-US";
     public static final int INVALID_MOVIE_ID = -1;
 
-
-
-
-
     static class ENDPOINTS {
         // Popular Movies Endpoint
         static final String POPULAR_MOVIES_ENDPOINT = "/movie/popular";
@@ -57,7 +52,7 @@ public class MovieDatabaseAPI {
 
         Log.d(TAG, "getPopularMovies: urlString = " + urlString);
 
-        String jsonString = Utils.getURLString(urlString);
+        String jsonString = NetUtils.getURLString(urlString);
         MovieListResult movieListResult =
                 MovieListResult.createMovieListResultFromJsonStr(jsonString);
 
@@ -66,7 +61,7 @@ public class MovieDatabaseAPI {
 
     public MovieDetailInfo getDetailsForMovie(int movieId) throws IOException {
         String urlString = getUrlForMovieDetail(movieId);
-        String jsonStr = Utils.getURLString(urlString);
+        String jsonStr = NetUtils.getURLString(urlString);
         MovieDetailInfo movieDetailInfo = MovieDetailInfo.createMovieDetailFromJsonStr(jsonStr);
 
         return movieDetailInfo;
@@ -82,13 +77,10 @@ public class MovieDatabaseAPI {
         return urlString;
     }
 
-    public List<MovieVideoInfo> getVidesForMovie(int movieId) throws IOException{
-
+    public List<MovieVideoInfo> getVideosForMovie(int movieId) throws IOException {
         String urlStr = getUrlForMovieVideosEndpoint(movieId);
-        String jsonStr = Utils.getURLString(urlStr);
-        List<MovieVideoInfo> results = parseMovieVideosResponse(jsonStr);
-
-        return results;
+        String jsonStr = NetUtils.getURLString(urlStr);
+        return MovieVideoInfo.parseMovieVideosResponse(jsonStr);
     }
 
     private static String getUrlForMovieVideosEndpoint(int movieId) {
@@ -109,8 +101,5 @@ public class MovieDatabaseAPI {
                 .append(posterPath)
                 .toString();
     }
-
-
-
 
 }
