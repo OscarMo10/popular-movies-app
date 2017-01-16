@@ -103,7 +103,7 @@ public class TestDb {
         // check if we got records back from query
         assertThat("Error: No records returned from movie query.", cursor.moveToFirst(), is(true));
 
-        TestUtilities.validateCurrentRecord("Error: Movie Entry Query Validation Failed",
+        TestUtilities.validateCurrentRecord("Error: MovieListResultItem Entry Query Validation Failed",
                 cursor, testValues);
 
         // Move cursor to make sure that there is only one record in the database

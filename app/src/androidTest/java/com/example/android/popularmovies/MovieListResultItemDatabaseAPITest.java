@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
  */
 
 @RunWith(AndroidJUnit4.class)
-public class MovieDatabaseAPITest {
+public class MovieListResultItemDatabaseAPITest {
     @Test
     public void getPopularMovies() throws Exception {
         List<MovieDatabaseAPI.Movie> list = MovieDatabaseAPI.getPopularMovies(1);
@@ -25,7 +25,7 @@ public class MovieDatabaseAPITest {
         assertNotNull(list);
 
         if (list != null) {
-            assertFalse("Movie list return is emtpy", list.size() == 0);
+            assertFalse("MovieListResultItem list return is emtpy", list.size() == 0);
         }
 
     }

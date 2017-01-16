@@ -6,12 +6,9 @@ import android.util.Log;
 import com.example.android.popularmovies.BuildConfig;
 import com.example.android.popularmovies.Utils;
 
-import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.android.popularmovies.data.MovieDatabaseAPI.ENDPOINTS.POPULAR_MOVIES_ENDPOINT;
@@ -45,13 +42,13 @@ public class MovieDatabaseAPI {
         // Popular Movies Endpoint
         static final String POPULAR_MOVIES_ENDPOINT = "/movie/popular";
 
-        // Movie Detail Endpoint
+        // MovieListResultItem Detail Endpoint
         static final String MOVIE_DETAIL_ENDPOINT_FORMAT = "/movie/%d";
 
         static final String MOVIE_VIDEOS_ENDPOINT_FORMAT = "/movie/%d/videos";
     }
 
-    public static List<Movie> getPopularMovies(int page) throws IOException {
+    public static MovieListResult getPopularMovies(int page) throws IOException, JSONException {
         String urlString = Uri.parse(BASE_MOVIE_DB_API_URL + POPULAR_MOVIES_ENDPOINT).buildUpon()
                 .appendQueryParameter(QUERY_PAGE, Integer.toString(page))
                 .appendQueryParameter(QUERY_API_KEY, BuildConfig.THE_MOVIE_DB_API_KEY)
@@ -60,37 +57,17 @@ public class MovieDatabaseAPI {
 
         Log.d(TAG, "getPopularMovies: urlString = " + urlString);
 
-        List<Movie> movies = null;
         String jsonString = Utils.getURLString(urlString);
-        movies = parseMovieJson(jsonString);
+        MovieListResult movieListResult =
+                MovieListResult.createMovieListResultFromJsonStr(jsonString);
 
-        return movies;
+        return movieListResult;
     }
 
-    private static List<Movie> parseMovieJson(String jsonString) {
-
-        List<Movie> movies = new ArrayList<>();
-        try {
-            JSONObject jsonObject = new JSONObject(jsonString);
-            JSONArray results = jsonObject.getJSONArray(PopularMovieResponseProperty.RESULTS);
-
-            for (int i = 0; i < results.length(); i++) {
-                JSONObject result = results.getJSONObject(i);
-                movies.add(Movie.getMovieFromJsonObject(result));
-            }
-
-        } catch (JSONException e) {
-            Log.e(TAG, "parseMovieJson: ", e);
-        }
-
-
-        return movies;
-    }
-
-    public MovieDetailInfo getMovieDetail(int movieId) throws IOException {
+    public MovieDetailInfo getDetailsForMovie(int movieId) throws IOException {
         String urlString = getUrlForMovieDetail(movieId);
         String jsonStr = Utils.getURLString(urlString);
-        MovieDetailInfo movieDetailInfo = MovieDetailInfo.parseMovieDetailResponse(jsonStr);
+        MovieDetailInfo movieDetailInfo = MovieDetailInfo.createMovieDetailFromJsonStr(jsonStr);
 
         return movieDetailInfo;
     }
@@ -105,7 +82,7 @@ public class MovieDatabaseAPI {
         return urlString;
     }
 
-    public List<MovieVideoInfo> getVideosInfo(int movieId) throws IOException{
+    public List<MovieVideoInfo> getVidesForMovie(int movieId) throws IOException{
 
         String urlStr = getUrlForMovieVideosEndpoint(movieId);
         String jsonStr = Utils.getURLString(urlStr);
@@ -135,13 +112,5 @@ public class MovieDatabaseAPI {
 
 
 
-    private static class PopularMovieResponseProperty {
-        final static String ID = "id";
-        final static String RESULTS = "results";
-        final static String POSTER_PATH = "poster_path";
-        final static String OVERVIEW = "overview";
-        final static String RELEASE_DATE = "release_date";
-        final static String TITLE = "title";
-        final static String VOTE_AVERAGE = "vote_average";
-    }
+
 }

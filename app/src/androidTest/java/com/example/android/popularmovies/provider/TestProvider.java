@@ -51,7 +51,7 @@ public class TestProvider {
         );
 
         assertThat(
-                "Error: Records not deleleted form Movie table during delete",
+                "Error: Records not deleleted form MovieListResultItem table during delete",
                 cursor.getCount(),
                 is(0)
         );

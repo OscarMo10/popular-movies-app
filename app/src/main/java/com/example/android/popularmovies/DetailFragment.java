@@ -182,7 +182,7 @@ public class DetailFragment extends Fragment {
             MovieDatabaseAPI.MovieDetailInfo movieDetailInfo = null;
 
             try {
-                 movieDetailInfo = MovieDatabaseAPI.getMovieDetail(movieId);
+                 movieDetailInfo = MovieDatabaseAPI.getDetailsForMovie(movieId);
             } catch (IOException e) {
                 Log.d(TAG, "doInBackground: Error fetching movie details");
                 e.printStackTrace();
